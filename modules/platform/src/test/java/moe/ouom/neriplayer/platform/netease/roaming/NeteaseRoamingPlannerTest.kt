@@ -104,6 +104,38 @@ class NeteaseRoamingPlannerTest {
     }
 
     @Test
+    fun `blocked songs never enter the buffer and leave it immediately`() {
+        val planner = NeteaseRoamingPlanner()
+        planner.blockSong(5L)
+
+        assertTrue(planner.acceptBatch(listOf(5L, 6L)).contains(6L))
+        assertFalse(planner.acceptBatch(listOf(5L)).contains(5L))
+        assertTrue(planner.isBlocked(5L))
+        assertEquals(listOf(5L), planner.blockedSongIds())
+    }
+
+    @Test
+    fun `blocking a buffered song drops it from pending`() {
+        val planner = NeteaseRoamingPlanner()
+        planner.acceptBatch(listOf(11L, 12L))
+
+        planner.blockSong(11L)
+
+        assertEquals(1, planner.pendingCount)
+        assertEquals(listOf(12L), planner.drainPending())
+    }
+
+    @Test
+    fun `blocked songs are restored without touching the recent window`() {
+        val planner = NeteaseRoamingPlanner()
+        planner.onSongStarted(21L)
+        planner.restoreBlocked(listOf(22L, 23L))
+
+        assertEquals(listOf(21L), planner.excludedSongIds())
+        assertEquals(listOf(22L, 23L), planner.blockedSongIds())
+    }
+
+    @Test
     fun `negative and zero ids are ignored`() {
         val planner = NeteaseRoamingPlanner()
         planner.onSongStarted(0L)
