@@ -152,6 +152,21 @@ internal object NeteaseRoamingRuntime {
         }
     }
 
+    /** 同步加载目录并选中默认档位；失败时返回内置兜底的默认档位。 */
+    private suspend fun loadCatalogOrFallback(): NeteaseRoamingChoice? {
+        val catalog = runCatching {
+            withContext(Dispatchers.IO) {
+                NeteaseRoamingCatalogParser.parse(client.getRoamingCatalog())
+            }
+        }.getOrElse { NeteaseRoamingCatalog.fallback() }
+        catalogLoadedAtMs = SystemClock.elapsedRealtime()
+        val choice = catalog.defaultChoice()
+        _state.update {
+            it.copy(loadingCatalog = false, catalog = catalog, selected = it.selected ?: choice)
+        }
+        return choice
+    }
+
     fun select(choice: NeteaseRoamingChoice) {
         if (_state.value.selected?.key == choice.key) return
         planner.clearPending()
@@ -160,7 +175,6 @@ internal object NeteaseRoamingRuntime {
 
     fun start() {
         val current = _state.value
-        val choice = current.selected ?: return
         if (current.busy || current.running) return
         val blocked = currentBlockReason()
         if (blocked != null) {
@@ -169,6 +183,12 @@ internal object NeteaseRoamingRuntime {
         }
         scope.launch {
             _state.update { it.copy(busy = true, failed = false) }
+            // 首页按钮直接开播时目录可能还没拉到，这里补一次再取歌。
+            val choice = _state.value.selected ?: loadCatalogOrFallback()
+            if (choice == null) {
+                _state.update { state -> state.copy(busy = false, failed = true) }
+                return@launch
+            }
             val songs = runCatching { fetchBatch(choice) }.getOrElse {
                 _state.update { state -> state.copy(busy = false, failed = true) }
                 return@launch

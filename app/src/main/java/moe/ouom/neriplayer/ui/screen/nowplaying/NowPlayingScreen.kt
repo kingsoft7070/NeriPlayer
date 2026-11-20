@@ -1289,6 +1289,7 @@ fun NowPlayingScreen(
                             }
 
                             val mainPlaybackControls: @Composable () -> Unit = {
+                                NowPlayingRoamingBar(modifier = Modifier.fillMaxWidth())
                                 BoxWithConstraints(
                                     modifier = Modifier.fillMaxWidth(),
                                     contentAlignment = Alignment.Center
