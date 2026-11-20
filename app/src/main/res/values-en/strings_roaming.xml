@@ -16,4 +16,10 @@
     <string name="roaming_blocked_offline">Roaming needs a network connection</string>
     <string name="roaming_blocked_listen_together">The room host controls playback in Listen Together. Leave the room to roam</string>
     <string name="roaming_dislike">Not interested</string>
+    <string name="roaming_scene_night_emo">Heartbreak</string>
+    <string name="roaming_scene_exercise">Workout</string>
+    <string name="roaming_scene_sleep">Sleep</string>
+    <string name="roaming_scene_relax">Relax</string>
+    <string name="roaming_scene_focus">Focus</string>
+    <string name="roaming_scene_commute">Commute</string>
 </resources>

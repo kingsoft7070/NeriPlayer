@@ -16,4 +16,10 @@
     <string name="roaming_blocked_offline">当前处于离线模式，联网后才能漫游</string>
     <string name="roaming_blocked_listen_together">一起听房间里由房主控制播放，退出房间后再漫游</string>
     <string name="roaming_dislike">不喜欢这首</string>
+    <string name="roaming_scene_night_emo">伤感</string>
+    <string name="roaming_scene_exercise">运动</string>
+    <string name="roaming_scene_sleep">助眠</string>
+    <string name="roaming_scene_relax">放松</string>
+    <string name="roaming_scene_focus">专注</string>
+    <string name="roaming_scene_commute">出行</string>
 </resources>

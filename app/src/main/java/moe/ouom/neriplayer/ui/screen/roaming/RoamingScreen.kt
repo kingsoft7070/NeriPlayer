@@ -61,6 +61,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import moe.ouom.neriplayer.R as AppR
 import moe.ouom.neriplayer.core.player.PlayerManager
 import moe.ouom.neriplayer.core.roaming.RoamingBlockReason
+import moe.ouom.neriplayer.ui.navigation.LocalMiniPlayerHeight
 import moe.ouom.neriplayer.data.model.netease.roaming.NeteaseRoamingChoice
 import moe.ouom.neriplayer.ui.theme.NeriDesign
 import moe.ouom.neriplayer.ui.viewmodel.roaming.NeteaseRoamingViewModel
@@ -109,7 +110,8 @@ fun RoamingScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = NeriDesign.tokens.pageHorizontalPadding),
+                .padding(horizontal = NeriDesign.tokens.pageHorizontalPadding)
+                .padding(bottom = LocalMiniPlayerHeight.current + 24.dp),
             verticalArrangement = Arrangement.spacedBy(NeriDesign.tokens.sectionSpacing)
         ) {
             Text(
@@ -202,6 +204,21 @@ fun RoamingScreen(onBack: () -> Unit) {
 }
 
 @Composable
+private fun roamingChoiceLabel(choice: NeteaseRoamingChoice): String {
+    if (choice.title.isNotBlank()) return choice.title
+    // 兜底目录没有标题，六个已知场景用本地文案，未知代号才退化显示原始 code。
+    return when (choice.code) {
+        "NIGHT_EMO" -> stringResource(AppR.string.roaming_scene_night_emo)
+        "EXERCISE" -> stringResource(AppR.string.roaming_scene_exercise)
+        "SLEEP_HELP" -> stringResource(AppR.string.roaming_scene_sleep)
+        "RELAX" -> stringResource(AppR.string.roaming_scene_relax)
+        "FOCUS" -> stringResource(AppR.string.roaming_scene_focus)
+        "COMMUTE" -> stringResource(AppR.string.roaming_scene_commute)
+        else -> choice.code
+    }
+}
+
+@Composable
 private fun ChoiceRow(
     title: String,
     choices: List<NeteaseRoamingChoice>,
@@ -223,7 +240,7 @@ private fun ChoiceRow(
                 FilterChip(
                     selected = choice.key == selectedKey,
                     onClick = { onSelect(choice) },
-                    label = { Text(text = choice.title.ifBlank { choice.code }) }
+                    label = { Text(text = roamingChoiceLabel(choice)) }
                 )
             }
         }

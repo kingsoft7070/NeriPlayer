@@ -982,7 +982,10 @@ fun NowPlayingScreen(
     val phoneLandscape = isNowPlayingPhoneLandscape(isLandscape, configuration.smallestScreenWidthDp)
     val tabletLandscape = isLandscape && !phoneLandscape
     // 平板横屏始终同时呈现封面与完整歌词，保留的手机页状态不能多消费一次返回
-    val effectiveShowLyricsScreen = showLyricsScreen && !tabletLandscape
+    // 小屏（含手表）上关闭封面页歌词后，独立歌词页也一并禁用：
+    // 这类设备资源紧张，两个开关分开管会让用户误以为没生效。
+    val lyricsScreenAllowed = nowPlayingCoverLyricsEnabled || !useCompactPortraitLayout
+    val effectiveShowLyricsScreen = showLyricsScreen && !tabletLandscape && lyricsScreenAllowed
 
     LaunchedEffect(Unit) { contentVisible = true }
     LaunchedEffect(currentSong?.id) { showQualitySwitchDialog = false }
