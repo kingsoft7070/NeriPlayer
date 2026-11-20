@@ -51,6 +51,8 @@ import moe.ouom.neriplayer.ui.viewmodel.tab.AlbumSummary
 import moe.ouom.neriplayer.ui.viewmodel.tab.BiliPlaylist
 import moe.ouom.neriplayer.ui.viewmodel.tab.PlaylistSummary
 import moe.ouom.neriplayer.ui.viewmodel.tab.YouTubeMusicPlaylist
+import moe.ouom.neriplayer.ui.screen.roaming.NETEASE_ROAMING_ROUTE
+import moe.ouom.neriplayer.ui.screen.roaming.RoamingScreen
 
 internal val navigationGson: Gson by lazy(LazyThreadSafetyMode.PUBLICATION) { Gson() }
 
@@ -203,6 +205,10 @@ private fun NavGraphBuilder.registerLibraryAndUtilityRoutes(
     mediaActions: AppNavigationMediaActions,
     onSongClick: (List<SongItem>, Int) -> Unit,
 ) {
+    composable(NETEASE_ROAMING_ROUTE) {
+        RoamingScreen(onBack = { navController.popBackStack() })
+    }
+
     registerExploreLibraryTabsRoutes(presentation.coherentFeedbackEnabled)
     registerLibraryDetailRoutes(
         navController, presentation.coherentFeedbackEnabled, presentation.offlineMode,

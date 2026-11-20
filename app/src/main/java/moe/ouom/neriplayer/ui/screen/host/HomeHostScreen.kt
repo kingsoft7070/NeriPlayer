@@ -173,6 +173,7 @@ internal fun HomeHostScreen(
     homeUsageEntries: List<UsageEntry> = emptyList(),
     homeUsageLoaded: Boolean = true,
     offlineMode: Boolean = false,
+    onOpenRoaming: () -> Unit = {},
     runtimeState: HomeHostRuntimeState = rememberHomeHostRuntimeState(),
     onSongClick: (List<SongItem>, Int) -> Unit = { _, _ -> },
     onSongClickWithSourceRoute: (List<SongItem>, Int, String?) -> Unit = { songs, index, _ ->
@@ -410,6 +411,7 @@ internal fun HomeHostScreen(
                                 usageEntries = homeUsageEntries,
                                 usageLoaded = homeUsageLoaded,
                                 offlineMode = offlineMode,
+                                onOpenRoaming = onOpenRoaming,
                                 continuePagerPage = runtimeState.continuePagerPage,
                                 onContinuePagerPageChanged = { page ->
                                     runtimeState.continuePagerPage = page
