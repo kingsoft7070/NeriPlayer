@@ -32,6 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Explore
@@ -147,6 +148,7 @@ internal fun MoreOptionsMainContent(
     onOpenBiliCcSubtitle: () -> Unit,
     onOpenListenTogether: () -> Unit,
     onOpenRoaming: () -> Unit = {},
+    onBlockSong: () -> Unit = {},
     onOpenEncyclopedia: () -> Unit,
     onShowSongDetails: () -> Unit,
     onShowQualitySwitch: () -> Unit,
@@ -240,6 +242,12 @@ internal fun MoreOptionsMainContent(
                 icon = Icons.Outlined.Explore,
                 hue = MoreHueIndigo,
                 onClick = onOpenRoaming
+            )
+            MoreOptionsItem(
+                title = stringResource(AppR.string.roaming_dislike),
+                icon = Icons.Outlined.Block,
+                hue = MoreHueRed,
+                onClick = onBlockSong
             )
         }
     }

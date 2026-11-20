@@ -494,7 +494,8 @@ private class MoreOptionsMainActions(
     private val onShowQualitySwitch: () -> Unit,
     private val onEnterAlbum: (AlbumSummary) -> Unit,
     private val onNavigateUp: () -> Unit,
-    private val onOpenRoamingAction: () -> Unit = {}
+    private val onOpenRoamingAction: () -> Unit = {},
+    private val onBlockSongAction: () -> Unit = {}
 ) {
     val onOpenSearch: () -> Unit = { owner.open(MoreOptionsPage.SEARCH) }
     val onOpenEditInfo: () -> Unit = { owner.open(MoreOptionsPage.EDIT_INFO) }
@@ -506,6 +507,7 @@ private class MoreOptionsMainActions(
     val onOpenRoaming: () -> Unit = {
         owner.dismiss { onOpenRoamingAction() }
     }
+    val onBlockSong: () -> Unit = { owner.dismiss { onBlockSongAction() } }
     val onOpenEncyclopedia: () -> Unit = { owner.open(MoreOptionsPage.ENCYCLOPEDIA) }
     val onShowDetails: () -> Unit = { owner.dismiss { onShowSongDetails(originalSong) } }
     val onShowQuality: () -> Unit = { owner.dismiss(onShowQualitySwitch) }
@@ -553,7 +555,9 @@ class MoreOptionsSheetNavigation(
     /** 百科页「查看全部评论」：先关掉更多面板，再由宿主打开原生评论面板。 */
     val onOpenComments: (CommentSource) -> Unit = {},
     /** 打开漫游页；网易云音源才有意义，宿主负责路由。 */
-    val onOpenRoaming: () -> Unit = {}
+    val onOpenRoaming: () -> Unit = {},
+    /** 把当前歌加入漫游屏蔽名单。 */
+    val onBlockSong: () -> Unit = {}
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -622,7 +626,7 @@ private fun MoreOptionsSheetContent(
     val mainActions = MoreOptionsMainActions(
         session.owner, originalSong, navigation.onShowSongDetails,
         navigation.onShowQualitySwitch, navigation.onEnterAlbum, navigation.onNavigateUp,
-        navigation.onOpenRoaming
+        navigation.onOpenRoaming, navigation.onBlockSong
     )
 
     MoreOptionsSheetSurface(session.owner, session.sheetState, snackbarHostState) {
@@ -1209,6 +1213,7 @@ private fun MoreOptionsMainPageContent(
         onOpenBiliCcSubtitle = actions.onOpenBiliCcSubtitle,
         onOpenListenTogether = actions.onOpenListenTogether,
         onOpenRoaming = actions.onOpenRoaming,
+        onBlockSong = actions.onBlockSong,
         onOpenEncyclopedia = actions.onOpenEncyclopedia,
         onShowSongDetails = actions.onShowDetails,
         onShowQualitySwitch = actions.onShowQuality,

@@ -115,6 +115,7 @@ import moe.ouom.neriplayer.core.download.ManagedDownloadStorage
 import moe.ouom.neriplayer.data.model.download.DownloadTask
 import moe.ouom.neriplayer.core.download.presentation.shouldHideRemoteDownloadAction
 import moe.ouom.neriplayer.core.player.PlayerManager
+import moe.ouom.neriplayer.core.roaming.NeteaseRoamingRuntime
 import moe.ouom.neriplayer.data.model.playback.PlaybackAudioSource
 import moe.ouom.neriplayer.data.model.playback.queue.PlayerQueueDisplayState
 import moe.ouom.neriplayer.data.model.playback.forSource
@@ -1812,7 +1813,8 @@ fun NowPlayingScreen(
                                         onEnterPlaylist = onEnterPlaylist,
                                         // 更多面板已收起，这里直接打开原生评论面板。
                                         onOpenComments = { showCommentSheet = true },
-                                        onOpenRoaming = onOpenRoaming
+                                        onOpenRoaming = onOpenRoaming,
+                                        onBlockSong = { NeteaseRoamingRuntime.blockCurrentSong() }
                                     ),
                                     snackbarHostState = snackbarHostState,
                                     fontSettings = MoreOptionsFontSettings(

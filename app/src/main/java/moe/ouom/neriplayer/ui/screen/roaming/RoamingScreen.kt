@@ -161,9 +161,6 @@ fun RoamingScreen(onBack: () -> Unit) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    TextButton(onClick = vm::blockCurrentSong) {
-                        Text(text = stringResource(AppR.string.roaming_dislike))
-                    }
                 }
             }
 

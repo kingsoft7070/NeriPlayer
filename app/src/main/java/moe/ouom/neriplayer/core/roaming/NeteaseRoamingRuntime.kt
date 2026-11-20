@@ -95,7 +95,9 @@ internal object NeteaseRoamingRuntime {
         roamingPrefs().edit()
             .putString(ROAMING_BLOCKED_KEY, planner.blockedSongIds().joinToString(","))
             .apply()
-        PlayerManager.next()
+        // 只有在漫游进行中才顺手跳歌；否则用户在正常听歌时点「不喜欢」
+        // 不应该被强行切走。
+        if (active) PlayerManager.next()
     }
 
     fun ensureCatalog(force: Boolean = false) {
