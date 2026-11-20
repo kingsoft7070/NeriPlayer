@@ -59,6 +59,9 @@ class NeteaseRoamingPlanner(
     private val recent = ArrayDeque<Long>()
     private val pending = ArrayDeque<Long>()
 
+    /** 用户主动「不喜欢」的歌，永不参与漫游，且不占用最近播放窗口。 */
+    private val blocked = LinkedHashSet<Long>()
+
     val pendingCount: Int get() = pending.size
 
     /** 下一次请求要排除的歌曲 ID，按播放先后排序（最老的在前）。 */
@@ -96,11 +99,28 @@ class NeteaseRoamingPlanner(
      * 服务端可能返回刚播过的歌（尤其在快速切歌时），这里直接剔掉；
      * 同一批内部的重复也一并去掉。
      */
+    fun isBlocked(songId: Long): Boolean = blocked.contains(songId)
+
+    /** 屏蔽一首歌；已在缓冲里的立即剔除，避免它下一首又被推上来。 */
+    fun blockSong(songId: Long) {
+        if (songId <= 0L) return
+        blocked.add(songId)
+        pending.remove(songId)
+        recent.remove(songId)
+    }
+
+    fun restoreBlocked(songIds: Collection<Long>) {
+        songIds.forEach { id -> if (id > 0L) blocked.add(id) }
+    }
+
+    fun blockedSongIds(): List<Long> = blocked.toList()
+
     fun acceptBatch(songIds: List<Long>): List<Long> {
         if (songIds.isEmpty()) return emptyList()
         val accepted = ArrayList<Long>(songIds.size)
         for (songId in songIds) {
             if (songId <= 0L) continue
+            if (blocked.contains(songId)) continue
             if (recent.contains(songId)) continue
             if (pending.contains(songId)) continue
             if (accepted.contains(songId)) continue

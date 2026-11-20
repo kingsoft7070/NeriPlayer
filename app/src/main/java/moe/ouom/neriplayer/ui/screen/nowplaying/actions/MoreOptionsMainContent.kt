@@ -145,6 +145,7 @@ internal fun MoreOptionsMainContent(
     onOpenBiliVideoSkip: () -> Unit,
     onOpenBiliCcSubtitle: () -> Unit,
     onOpenListenTogether: () -> Unit,
+    onOpenRoaming: () -> Unit = {},
     onOpenEncyclopedia: () -> Unit,
     onShowSongDetails: () -> Unit,
     onShowQualitySwitch: () -> Unit,
@@ -232,6 +233,12 @@ internal fun MoreOptionsMainContent(
                     stringResource(CoreCommonR.string.server_listen_together_unavailable)
                 } else null,
                 onClick = onOpenListenTogether
+            )
+            MoreOptionsItem(
+                title = stringResource(AppR.string.roaming_title),
+                icon = Icons.Outlined.Explore,
+                hue = MoreHueIndigo,
+                onClick = onOpenRoaming
             )
         }
     }

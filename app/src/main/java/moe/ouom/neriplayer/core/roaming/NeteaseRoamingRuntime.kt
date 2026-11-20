@@ -33,6 +33,10 @@ private const val ROAMING_REFILL_BACKOFF_MS = 30_000L
 
 private const val ROAMING_CANDIDATE_LIMIT = 50
 
+/** 「不喜欢」的持久化位置；只存 ID 列表，不涉及任何账号信息。 */
+private const val ROAMING_PREFS_NAME = "neriplayer_roaming"
+private const val ROAMING_BLOCKED_KEY = "blocked_song_ids"
+
 data class NeteaseRoamingUiState(
     val loadingCatalog: Boolean = true,
     val catalog: NeteaseRoamingCatalog = NeteaseRoamingCatalog.fallback(),
@@ -71,7 +75,27 @@ internal object NeteaseRoamingRuntime {
     private var catalogLoadedAtMs = 0L
 
     init {
+        restoreBlockedSongs()
         observeListenTogether()
+    }
+
+    /** 屏蔽列表跨进程存续，否则重启后「不喜欢」就失效了。 */
+    private fun restoreBlockedSongs() {
+        val raw = roamingPrefs().getString(ROAMING_BLOCKED_KEY, null) ?: return
+        planner.restoreBlocked(raw.split(',').mapNotNull { it.trim().toLongOrNull() })
+    }
+
+    private fun roamingPrefs() = AppContainer.applicationContext
+        .getSharedPreferences(ROAMING_PREFS_NAME, android.content.Context.MODE_PRIVATE)
+
+    /** 当前这首标为「不喜欢」：加入永久屏蔽、落盘，然后跳到下一首。 */
+    fun blockCurrentSong() {
+        val song = PlayerManager.currentSongFlow.value ?: return
+        planner.blockSong(song.id)
+        roamingPrefs().edit()
+            .putString(ROAMING_BLOCKED_KEY, planner.blockedSongIds().joinToString(","))
+            .apply()
+        PlayerManager.next()
     }
 
     fun ensureCatalog(force: Boolean = false) {
@@ -210,7 +234,9 @@ internal object NeteaseRoamingRuntime {
                 client.getRoamingSongs(
                     mode = choice.wireMode,
                     subMode = choice.wireSubMode,
-                    excludedSongIds = planner.excludedSongIds(),
+                    excludedSongIds = (planner.blockedSongIds() + planner.excludedSongIds())
+                        .distinct()
+                        .takeLast(100),
                     cascade = choice.cascade,
                     limit = NETEASE_ROAMING_BATCH_SIZE
                 )

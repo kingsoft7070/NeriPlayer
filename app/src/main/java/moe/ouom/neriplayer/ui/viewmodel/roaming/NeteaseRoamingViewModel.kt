@@ -27,5 +27,7 @@ class NeteaseRoamingViewModel(application: Application) : AndroidViewModel(appli
 
     fun stop() = NeteaseRoamingRuntime.stop()
 
+    fun blockCurrentSong() = NeteaseRoamingRuntime.blockCurrentSong()
+
     fun refreshCatalog() = NeteaseRoamingRuntime.ensureCatalog(force = true)
 }

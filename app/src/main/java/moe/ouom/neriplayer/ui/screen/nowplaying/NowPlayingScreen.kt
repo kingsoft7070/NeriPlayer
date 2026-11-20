@@ -466,6 +466,7 @@ private fun NowPlayingImmersivePortraitLayout(
 @Composable
 fun NowPlayingScreen(
     onNavigateUp: () -> Unit,
+    onOpenRoaming: () -> Unit = {},
     onOpenCurrentPlaybackSource: (() -> Unit)? = null,
     showLyricsScreen: Boolean,
     onShowLyricsScreenChange: (Boolean) -> Unit,
@@ -1810,7 +1811,8 @@ fun NowPlayingScreen(
                                         onEnterArtist = onEnterArtist,
                                         onEnterPlaylist = onEnterPlaylist,
                                         // 更多面板已收起，这里直接打开原生评论面板。
-                                        onOpenComments = { showCommentSheet = true }
+                                        onOpenComments = { showCommentSheet = true },
+                                        onOpenRoaming = onOpenRoaming
                                     ),
                                     snackbarHostState = snackbarHostState,
                                     fontSettings = MoreOptionsFontSettings(

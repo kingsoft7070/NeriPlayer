@@ -1858,6 +1858,7 @@ private fun NeriAppContent(
                     ) {
                         NowPlayingScreen(
                             onNavigateUp = { showNowPlaying = false },
+                            onOpenRoaming = { navController.navigate(NETEASE_ROAMING_ROUTE) },
                             onPhoneLandscapeBack = onPhoneLandscapeBack,
                             onOpenCurrentPlaybackSource = onOpenCurrentPlaybackSource,
                             showLyricsScreen = showNowPlayingLyrics,

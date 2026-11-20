@@ -15,4 +15,5 @@
     <string name="roaming_entry">Roaming</string>
     <string name="roaming_blocked_offline">Roaming needs a network connection</string>
     <string name="roaming_blocked_listen_together">The room host controls playback in Listen Together. Leave the room to roam</string>
+    <string name="roaming_dislike">Not interested</string>
 </resources>
