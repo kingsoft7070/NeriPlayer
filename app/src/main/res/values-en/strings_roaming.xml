@@ -13,4 +13,6 @@
     <string name="roaming_fallback_catalog">Online catalog unavailable, using built-in modes</string>
     <string name="roaming_error">Failed to load roaming tracks, try again later</string>
     <string name="roaming_entry">Roaming</string>
+    <string name="roaming_blocked_offline">Roaming needs a network connection</string>
+    <string name="roaming_blocked_listen_together">The room host controls playback in Listen Together. Leave the room to roam</string>
 </resources>

@@ -59,6 +59,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import moe.ouom.neriplayer.R as AppR
 import moe.ouom.neriplayer.core.player.PlayerManager
+import moe.ouom.neriplayer.core.roaming.RoamingBlockReason
 import moe.ouom.neriplayer.data.model.netease.roaming.NeteaseRoamingChoice
 import moe.ouom.neriplayer.ui.theme.NeriDesign
 import moe.ouom.neriplayer.ui.viewmodel.roaming.NeteaseRoamingViewModel
@@ -162,6 +163,20 @@ fun RoamingScreen(onBack: () -> Unit) {
                 }
             }
 
+            state.blockedReason?.let { reason ->
+                Text(
+                    text = stringResource(
+                        when (reason) {
+                            RoamingBlockReason.OFFLINE -> AppR.string.roaming_blocked_offline
+                            RoamingBlockReason.LISTEN_TOGETHER ->
+                                AppR.string.roaming_blocked_listen_together
+                        }
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             if (state.failed) {
                 Text(
                     text = stringResource(AppR.string.roaming_error),
@@ -172,7 +187,7 @@ fun RoamingScreen(onBack: () -> Unit) {
 
             Button(
                 onClick = { if (state.running) vm.stop() else vm.start() },
-                enabled = !state.busy && state.selected != null,
+                enabled = !state.busy && state.selected != null && state.blockedReason == null,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(

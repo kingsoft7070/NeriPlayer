@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moe.ouom.neriplayer.core.di.AppContainer
+import moe.ouom.neriplayer.data.traffic.isOfflineModeNow
 import moe.ouom.neriplayer.core.player.PlayerManager
 import moe.ouom.neriplayer.data.model.SongItem
 import moe.ouom.neriplayer.data.model.netease.roaming.NeteaseRoamingCatalog
@@ -39,8 +40,14 @@ data class NeteaseRoamingUiState(
     val running: Boolean = false,
     val busy: Boolean = false,
     val failed: Boolean = false,
-    val offline: Boolean = false
+    val blockedReason: RoamingBlockReason? = null
 )
+
+/** 漫游被拦下的原因；两者都不该在开始后才提示，所以在入口就判。 */
+enum class RoamingBlockReason {
+    OFFLINE,
+    LISTEN_TOGETHER
+}
 
 /**
  * 漫游的常驻运行体。
@@ -62,6 +69,10 @@ internal object NeteaseRoamingRuntime {
     private var observerJob: Job? = null
     private var active = false
     private var catalogLoadedAtMs = 0L
+
+    init {
+        observeListenTogether()
+    }
 
     fun ensureCatalog(force: Boolean = false) {
         val fresh = SystemClock.elapsedRealtime() - catalogLoadedAtMs < ROAMING_CATALOG_TTL_MS
@@ -85,6 +96,36 @@ internal object NeteaseRoamingRuntime {
         }
     }
 
+    /**
+     * 拦截条件：
+     * - 离线：漫游每次取歌都要联网，离线开始必然失败
+     * - 一起听房间里：房主才是队列的所有者，两边抢队列会互相覆盖
+     */
+    private fun currentBlockReason(): RoamingBlockReason? {
+        val app = AppContainer.applicationContext
+        if (app.isOfflineModeNow()) return RoamingBlockReason.OFFLINE
+        if (AppContainer.listenTogetherSessionManager.roomState.value != null) {
+            return RoamingBlockReason.LISTEN_TOGETHER
+        }
+        return null
+    }
+
+    /** 进房即停：已经开着的漫游让位给房主。 */
+    private fun observeListenTogether() {
+        scope.launch {
+            AppContainer.listenTogetherSessionManager.roomState.collect { room ->
+                if (room == null) {
+                    _state.update { it.copy(blockedReason = null) }
+                } else if (active) {
+                    stop()
+                    _state.update { it.copy(blockedReason = RoamingBlockReason.LISTEN_TOGETHER) }
+                } else {
+                    _state.update { it.copy(blockedReason = RoamingBlockReason.LISTEN_TOGETHER) }
+                }
+            }
+        }
+    }
+
     fun select(choice: NeteaseRoamingChoice) {
         if (_state.value.selected?.key == choice.key) return
         planner.clearPending()
@@ -95,6 +136,11 @@ internal object NeteaseRoamingRuntime {
         val current = _state.value
         val choice = current.selected ?: return
         if (current.busy || current.running) return
+        val blocked = currentBlockReason()
+        if (blocked != null) {
+            _state.update { it.copy(blockedReason = blocked, failed = false) }
+            return
+        }
         scope.launch {
             _state.update { it.copy(busy = true, failed = false) }
             val songs = runCatching { fetchBatch(choice) }.getOrElse {
@@ -144,6 +190,8 @@ internal object NeteaseRoamingRuntime {
 
     private fun requestRefill() {
         val choice = _state.value.selected ?: return
+        // 离线时补货必然失败，等下次换歌（可能已恢复网络）再试。
+        if (AppContainer.applicationContext.isOfflineModeNow()) return
         refillJob = scope.launch {
             val songs = runCatching { fetchBatch(choice) }.getOrElse {
                 // 失败不打断播放：队列还有存量，退避一段时间再试。
