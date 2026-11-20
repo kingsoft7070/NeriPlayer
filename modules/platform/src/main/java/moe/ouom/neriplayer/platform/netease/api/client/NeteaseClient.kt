@@ -378,6 +378,14 @@ internal class NeteaseRequestSessionStore {
     }
 }
 
+private const val NETEASE_ROAMING_CATALOG_URL: String =
+    "https://music.163.com/api/link/position/show/resource"
+private const val NETEASE_ROAMING_SONGS_URL: String = "https://music.163.com/api/v1/radio/get"
+private const val NETEASE_ROAMING_EXCLUSION_LIMIT: Int = 100
+private const val NETEASE_ROAMING_CATALOG_POSITION: String = "FMTopModeDialog"
+private const val NETEASE_ROAMING_CATALOG_EXT_JSON: String =
+    """{"clientLibraAbTest":{},"isHomePageNewFramework":true,"userSetFMMode":false,"enableAutoPlay":false}"""
+
 class NeteaseClient(
     private val commentCheckToken: suspend () -> String
 ) {
@@ -750,6 +758,67 @@ class NeteaseClient(
     @Throws(IOException::class)
     fun getPersonalFmSongs(): String {
         return callWeApi("/v1/radio/get", emptyMap(), usePersistedCookies = true)
+    }
+
+    /**
+     * 漫游入口目录（模式 + 场景）。
+     *
+     * 走运营位接口，未登录也能拿到默认目录；服务端结构变化时由解析层兜底。
+     */
+    @Throws(IOException::class)
+    fun getRoamingCatalog(): String {
+        val params = linkedMapOf<String, Any>(
+            "positionCode" to NETEASE_ROAMING_CATALOG_POSITION,
+            "extJson" to NETEASE_ROAMING_CATALOG_EXT_JSON
+        )
+        return request(
+            url = NETEASE_ROAMING_CATALOG_URL,
+            params = params,
+            mode = CryptoMode.EAPI,
+            method = "POST",
+            usePersistedCookies = true
+        )
+    }
+
+    /**
+     * 取一批漫游歌曲。
+     *
+     * 与 [getPersonalFmSongs] 是同一个后端能力：私人 FM 是它的无参默认档，
+     * 漫游则用 `mode` / `subMode` 指定档位与场景。一次只取 3 首是官方客户端的口径。
+     *
+     * @param mode 模式码，如 `DEFAULT` / `FAMILIAR` / `EXPLORE` / `SCENE_RCMD`
+     * @param subMode 场景码，仅 `SCENE_RCMD` 需要
+     * @param excludedSongIds 最近播放过的歌，服务端会尽量避开（上限 100）
+     * @param cascade 曲风/拼图级联参数，取自目录里的 `fmCascadeModeStr`
+     */
+    @Throws(IOException::class)
+    fun getRoamingSongs(
+        mode: String,
+        subMode: String = "",
+        excludedSongIds: List<Long> = emptyList(),
+        cascade: String = "",
+        limit: Int = 3,
+        usePersistedCookies: Boolean = true
+    ): String {
+        val params = linkedMapOf<String, Any>(
+            "mode" to mode,
+            "subMode" to subMode,
+            "limit" to limit.coerceIn(1, 50).toString(),
+            "unplaySongIds" to excludedSongIds
+                .takeLast(NETEASE_ROAMING_EXCLUSION_LIMIT)
+                .joinToString(","),
+            "entranceType" to "",
+            "fmCascadeModeStr" to cascade,
+            "openAidj" to "false",
+            "aidjReqTimes" to "0"
+        )
+        return request(
+            url = NETEASE_ROAMING_SONGS_URL,
+            params = params,
+            mode = CryptoMode.EAPI,
+            method = "POST",
+            usePersistedCookies = usePersistedCookies
+        )
     }
 
     @Throws(IOException::class)

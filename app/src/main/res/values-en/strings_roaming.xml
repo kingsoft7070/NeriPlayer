@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Roaming -->
+    <string name="roaming_title">Roaming</string>
+    <string name="roaming_mode_section">Modes</string>
+    <string name="roaming_scene_section">Scenes</string>
+    <string name="roaming_hint">Keep listening along your taste, refilled automatically</string>
+    <string name="roaming_start">Start roaming</string>
+    <string name="roaming_stop">Stop roaming</string>
+    <string name="roaming_running">Roaming</string>
+    <string name="roaming_idle">Pick a mode to start</string>
+    <string name="roaming_login_required">Not signed in to NetEase, picks will be more random</string>
+    <string name="roaming_fallback_catalog">Online catalog unavailable, using built-in modes</string>
+    <string name="roaming_error">Failed to load roaming tracks, try again later</string>
+    <string name="roaming_entry">Roaming</string>
+    <string name="roaming_blocked_offline">Roaming needs a network connection</string>
+    <string name="roaming_blocked_listen_together">The room host controls playback in Listen Together. Leave the room to roam</string>
+    <string name="roaming_dislike">Not interested</string>
+    <string name="roaming_scene_night_emo">Heartbreak</string>
+    <string name="roaming_scene_exercise">Workout</string>
+    <string name="roaming_scene_sleep">Sleep</string>
+    <string name="roaming_scene_relax">Relax</string>
+    <string name="roaming_scene_focus">Focus</string>
+    <string name="roaming_scene_commute">Commute</string>
+</resources>

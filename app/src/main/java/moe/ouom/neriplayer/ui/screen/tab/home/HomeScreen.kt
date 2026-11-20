@@ -25,6 +25,7 @@ package moe.ouom.neriplayer.ui.screen.tab.home
 
 import moe.ouom.neriplayer.ui.i18n.UiText
 import moe.ouom.neriplayer.ui.i18n.asString
+import moe.ouom.neriplayer.R as AppR
 import moe.ouom.neriplayer.ui.theme.NeriDesign
 import moe.ouom.neriplayer.ui.theme.neriRoundedShape
 import moe.ouom.neriplayer.ui.screen.playlist.FavoriteSongLookup
@@ -81,6 +82,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
@@ -191,7 +193,8 @@ fun HomeScreen(
     onBiliMusicRankMore: (BiliMusicRankType) -> Unit = {},
     onBiliMusicHotMore: () -> Unit = {},
     onBiliMusicRankPlay: (List<BiliVideoItem>, Int) -> Unit = { _, _ -> },
-    onBiliMusicHotPlay: (List<BiliVideoItem>, Int) -> Unit = { _, _ -> }
+    onBiliMusicHotPlay: (List<BiliVideoItem>, Int) -> Unit = { _, _ -> },
+    onOpenRoaming: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val appContext = remember(context) { context.applicationContext }
@@ -777,6 +780,14 @@ fun HomeScreen(
                                 }
                             }
                         } else {
+                            item(
+                                key = registerGridItemKey("home:roaming-entry"),
+                                span = { GridItemSpan(maxLineSpan) }
+                            ) {
+                                TextButton(onClick = onOpenRoaming) {
+                                    Text(text = stringResource(AppR.string.roaming_entry))
+                                }
+                            }
                             if (showNeteaseRadar) {
                                 ui.radarSongSections
                                     .filter { it.source == NeteaseHomeSongSource.PERSONAL_RADAR }
@@ -795,7 +806,8 @@ fun HomeScreen(
                                         favoriteSongLookup = favoriteSongLookup,
                                         onFavoriteToggle = ::toggleHomeSongFavorite,
                                         onShowSnackbar = showHomeSnackbar,
-                                        offlineMode = offlineMode
+                                        offlineMode = offlineMode,
+                                        onOpenRoaming = onOpenRoaming,
                                     )
                                 }
 
@@ -854,7 +866,8 @@ fun HomeScreen(
                                             favoriteSongLookup = favoriteSongLookup,
                                             onFavoriteToggle = ::toggleHomeSongFavorite,
                                             onShowSnackbar = showHomeSnackbar,
-                                            offlineMode = offlineMode
+                                            offlineMode = offlineMode,
+                                            onOpenRoaming = onOpenRoaming,
                                         )
                                     }
                             }
@@ -880,7 +893,8 @@ fun HomeScreen(
                                         favoriteSongLookup = favoriteSongLookup,
                                         onFavoriteToggle = ::toggleHomeSongFavorite,
                                         onShowSnackbar = showHomeSnackbar,
-                                        offlineMode = offlineMode
+                                        offlineMode = offlineMode,
+                                        onOpenRoaming = onOpenRoaming,
                                     )
                                 }
                             }
@@ -960,7 +974,8 @@ private fun LazyGridScope.addNeteaseSongSection(
     favoriteSongLookup: FavoriteSongLookup,
     onFavoriteToggle: (SongItem, Boolean) -> Unit,
     onShowSnackbar: (String) -> Unit,
-    offlineMode: Boolean
+    offlineMode: Boolean,
+    onOpenRoaming: (() -> Unit)? = null
 ) {
     item(
         key = registerKey("$sectionKey:header"),
@@ -1002,7 +1017,8 @@ private fun LazyGridScope.addNeteasePlaylistSection(
     favoriteKeys: Set<String>,
     onItemClick: (PlaylistSummary) -> Unit,
     onShowSnackbar: (String) -> Unit,
-    offlineMode: Boolean
+    offlineMode: Boolean,
+    onOpenRoaming: (() -> Unit)? = null
 ) {
     item(
         key = registerKey("$sectionKey:header"),

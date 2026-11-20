@@ -115,6 +115,7 @@ import moe.ouom.neriplayer.core.download.ManagedDownloadStorage
 import moe.ouom.neriplayer.data.model.download.DownloadTask
 import moe.ouom.neriplayer.core.download.presentation.shouldHideRemoteDownloadAction
 import moe.ouom.neriplayer.core.player.PlayerManager
+import moe.ouom.neriplayer.core.roaming.NeteaseRoamingRuntime
 import moe.ouom.neriplayer.data.model.playback.PlaybackAudioSource
 import moe.ouom.neriplayer.data.model.playback.queue.PlayerQueueDisplayState
 import moe.ouom.neriplayer.data.model.playback.forSource
@@ -466,6 +467,7 @@ private fun NowPlayingImmersivePortraitLayout(
 @Composable
 fun NowPlayingScreen(
     onNavigateUp: () -> Unit,
+    onOpenRoaming: () -> Unit = {},
     onOpenCurrentPlaybackSource: (() -> Unit)? = null,
     showLyricsScreen: Boolean,
     onShowLyricsScreenChange: (Boolean) -> Unit,
@@ -980,7 +982,10 @@ fun NowPlayingScreen(
     val phoneLandscape = isNowPlayingPhoneLandscape(isLandscape, configuration.smallestScreenWidthDp)
     val tabletLandscape = isLandscape && !phoneLandscape
     // 平板横屏始终同时呈现封面与完整歌词，保留的手机页状态不能多消费一次返回
-    val effectiveShowLyricsScreen = showLyricsScreen && !tabletLandscape
+    // 小屏（含手表）上关闭封面页歌词后，独立歌词页也一并禁用：
+    // 这类设备资源紧张，两个开关分开管会让用户误以为没生效。
+    val lyricsScreenAllowed = nowPlayingCoverLyricsEnabled || !useCompactPortraitLayout
+    val effectiveShowLyricsScreen = showLyricsScreen && !tabletLandscape && lyricsScreenAllowed
 
     LaunchedEffect(Unit) { contentVisible = true }
     LaunchedEffect(currentSong?.id) { showQualitySwitchDialog = false }
@@ -1284,6 +1289,7 @@ fun NowPlayingScreen(
                             }
 
                             val mainPlaybackControls: @Composable () -> Unit = {
+                                NowPlayingRoamingBar(modifier = Modifier.fillMaxWidth())
                                 BoxWithConstraints(
                                     modifier = Modifier.fillMaxWidth(),
                                     contentAlignment = Alignment.Center
@@ -1810,7 +1816,9 @@ fun NowPlayingScreen(
                                         onEnterArtist = onEnterArtist,
                                         onEnterPlaylist = onEnterPlaylist,
                                         // 更多面板已收起，这里直接打开原生评论面板。
-                                        onOpenComments = { showCommentSheet = true }
+                                        onOpenComments = { showCommentSheet = true },
+                                        onOpenRoaming = onOpenRoaming,
+                                        onBlockSong = { NeteaseRoamingRuntime.blockCurrentSong() }
                                     ),
                                     snackbarHostState = snackbarHostState,
                                     fontSettings = MoreOptionsFontSettings(

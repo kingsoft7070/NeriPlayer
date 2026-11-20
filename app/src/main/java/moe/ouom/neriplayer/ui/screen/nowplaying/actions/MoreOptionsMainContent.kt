@@ -32,8 +32,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.Info
@@ -145,6 +147,8 @@ internal fun MoreOptionsMainContent(
     onOpenBiliVideoSkip: () -> Unit,
     onOpenBiliCcSubtitle: () -> Unit,
     onOpenListenTogether: () -> Unit,
+    onOpenRoaming: () -> Unit = {},
+    onBlockSong: () -> Unit = {},
     onOpenEncyclopedia: () -> Unit,
     onShowSongDetails: () -> Unit,
     onShowQualitySwitch: () -> Unit,
@@ -232,6 +236,18 @@ internal fun MoreOptionsMainContent(
                     stringResource(CoreCommonR.string.server_listen_together_unavailable)
                 } else null,
                 onClick = onOpenListenTogether
+            )
+            MoreOptionsItem(
+                title = stringResource(AppR.string.roaming_title),
+                icon = Icons.Outlined.Explore,
+                hue = MoreHueIndigo,
+                onClick = onOpenRoaming
+            )
+            MoreOptionsItem(
+                title = stringResource(AppR.string.roaming_dislike),
+                icon = Icons.Outlined.Block,
+                hue = MoreHueRed,
+                onClick = onBlockSong
             )
         }
     }

@@ -234,6 +234,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import moe.ouom.neriplayer.ui.component.common.rememberPredictiveDismissState
 import moe.ouom.neriplayer.ui.component.common.rememberRevealsUnderlying
 import moe.ouom.neriplayer.R as AppR
+import moe.ouom.neriplayer.core.roaming.NeteaseRoamingRuntime
 
 private val EmptyLauncherShortcutRequestFlow =
     MutableStateFlow<LauncherShortcutRequest?>(null)
@@ -1488,6 +1489,7 @@ private fun NeriAppContent(
                         LocalHomeOpenSearch provides { navigateToMainTab(Destinations.Explore.route) }
                     ) {
                     HomeHostScreen(
+                        onOpenRoaming = { NeteaseRoamingRuntime.start() },
                         showContinueCard = showHomeContinueCard,
                         showTrendingCard = showHomeTrendingCard,
                         showRadarCard = showHomeRadarCard,
@@ -1856,6 +1858,7 @@ private fun NeriAppContent(
                     ) {
                         NowPlayingScreen(
                             onNavigateUp = { showNowPlaying = false },
+                            onOpenRoaming = { NeteaseRoamingRuntime.start() },
                             onPhoneLandscapeBack = onPhoneLandscapeBack,
                             onOpenCurrentPlaybackSource = onOpenCurrentPlaybackSource,
                             showLyricsScreen = showNowPlayingLyrics,
