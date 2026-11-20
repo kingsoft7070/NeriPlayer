@@ -780,6 +780,14 @@ fun HomeScreen(
                                 }
                             }
                         } else {
+                            item(
+                                key = registerGridItemKey("home:roaming-entry"),
+                                span = { GridItemSpan(maxLineSpan) }
+                            ) {
+                                TextButton(onClick = onOpenRoaming) {
+                                    Text(text = stringResource(AppR.string.roaming_entry))
+                                }
+                            }
                             if (showNeteaseRadar) {
                                 ui.radarSongSections
                                     .filter { it.source == NeteaseHomeSongSource.PERSONAL_RADAR }
@@ -977,17 +985,6 @@ private fun LazyGridScope.addNeteaseSongSection(
             icon = icon,
             title = stringResource(sectionState.source.titleRes)
         )
-    }
-    val openRoaming = onOpenRoaming
-    if (openRoaming != null && sectionState.source == NeteaseHomeSongSource.PRIVATE_FM) {
-        item(
-            key = registerKey("$sectionKey:roaming-entry"),
-            span = { GridItemSpan(maxLineSpan) }
-        ) {
-            TextButton(onClick = openRoaming) {
-                Text(text = stringResource(AppR.string.roaming_entry))
-            }
-        }
     }
     sectionContent(
         section = sectionState.section,

@@ -57,11 +57,6 @@ import java.security.SecureRandom
 import java.util.Locale
 import java.util.zip.GZIPInputStream
 import moe.ouom.neriplayer.network.proxy.DynamicProxySelector
-import moe.ouom.neriplayer.platform.netease.roaming.NETEASE_ROAMING_CATALOG_EXT_JSON
-import moe.ouom.neriplayer.platform.netease.roaming.NETEASE_ROAMING_CATALOG_POSITION
-import moe.ouom.neriplayer.platform.netease.roaming.NETEASE_ROAMING_CATALOG_URL
-import moe.ouom.neriplayer.platform.netease.roaming.NETEASE_ROAMING_EXCLUSION_WINDOW
-import moe.ouom.neriplayer.platform.netease.roaming.NETEASE_ROAMING_SONGS_URL
 
 internal fun mergeNeteaseRequestCookies(
     persistedCookies: Map<String, String>,
@@ -382,6 +377,14 @@ internal class NeteaseRequestSessionStore {
         }
     }
 }
+
+private const val NETEASE_ROAMING_CATALOG_URL: String =
+    "https://music.163.com/api/link/position/show/resource"
+private const val NETEASE_ROAMING_SONGS_URL: String = "https://music.163.com/api/v1/radio/get"
+private const val NETEASE_ROAMING_EXCLUSION_LIMIT: Int = 100
+private const val NETEASE_ROAMING_CATALOG_POSITION: String = "FMTopModeDialog"
+private const val NETEASE_ROAMING_CATALOG_EXT_JSON: String =
+    """{"clientLibraAbTest":{},"isHomePageNewFramework":true,"userSetFMMode":false,"enableAutoPlay":false}"""
 
 class NeteaseClient(
     private val commentCheckToken: suspend () -> String
@@ -802,7 +805,7 @@ class NeteaseClient(
             "subMode" to subMode,
             "limit" to limit.coerceIn(1, 50).toString(),
             "unplaySongIds" to excludedSongIds
-                .takeLast(NETEASE_ROAMING_EXCLUSION_WINDOW)
+                .takeLast(NETEASE_ROAMING_EXCLUSION_LIMIT)
                 .joinToString(","),
             "entranceType" to "",
             "fmCascadeModeStr" to cascade,

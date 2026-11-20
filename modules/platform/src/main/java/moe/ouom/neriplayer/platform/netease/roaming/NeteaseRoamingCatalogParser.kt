@@ -31,14 +31,13 @@ import moe.ouom.neriplayer.data.model.netease.roaming.NETEASE_ROAMING_SCENE_MODE
 import moe.ouom.neriplayer.data.model.netease.roaming.NeteaseRoamingCatalog
 import moe.ouom.neriplayer.data.model.netease.roaming.NeteaseRoamingChoice
 
-/** 漫游入口目录所在的运营位编码。 */
-internal const val NETEASE_ROAMING_CATALOG_POSITION: String = "FMTopModeDialog"
+/**
+ * 漫游入口目录所在的运营位编码。
+ *
+ * 请求常量留在 api.client 包内（分层门禁不允许 api.client 反向依赖本包），
+ * 这里只保留解析需要的口径说明。
+ */
 
-internal const val NETEASE_ROAMING_CATALOG_URL: String =
-    "https://music.163.com/api/link/position/show/resource"
-
-internal const val NETEASE_ROAMING_SONGS_URL: String =
-    "https://music.163.com/api/v1/radio/get"
 
 /**
  * 目录接口的 extJson。
