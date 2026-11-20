@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 漫游 -->
+    <string name="roaming_title">漫游</string>
+    <string name="roaming_mode_section">模式</string>
+    <string name="roaming_scene_section">场景</string>
+    <string name="roaming_hint">沿着你的口味一路听下去，播完自动续上</string>
+    <string name="roaming_start">开始漫游</string>
+    <string name="roaming_stop">结束漫游</string>
+    <string name="roaming_running">正在漫游</string>
+    <string name="roaming_idle">选择一个档位后开始</string>
+    <string name="roaming_login_required">未登录网易云，推荐会偏随机</string>
+    <string name="roaming_fallback_catalog">在线目录不可用，已使用内置档位</string>
+    <string name="roaming_error">漫游取歌失败，请稍后重试</string>
+    <string name="roaming_entry">漫游</string>
+</resources>
