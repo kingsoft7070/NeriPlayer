@@ -120,7 +120,9 @@ internal fun parseNeteaseHomeSongs(raw: String, limit: Int = Int.MAX_VALUE): Lis
     return buildList(songs.length()) {
         for (index in 0 until songs.length()) {
             val container = songs.optJSONObject(index) ?: continue
-            val song = container.optJSONObject("song") ?: container
+            val song = container.optJSONObject("songInfo")
+                ?: container.optJSONObject("song")
+                ?: container
             parseNeteaseHomeSong(song)?.let(::add)
             if (size >= limit) break
         }
